@@ -1,0 +1,8 @@
+using ServerStatisticsCollectionService.ServerStatisticsCollectors;
+
+namespace ServerStatisticsCollectionService.ServerStatisticsCollectorCreator;
+
+public interface IServerStatisticsCollectorCreator
+{
+    public IServerStatisticsCollector GetServerStatisticsCollectorFor(string osName);
+}
