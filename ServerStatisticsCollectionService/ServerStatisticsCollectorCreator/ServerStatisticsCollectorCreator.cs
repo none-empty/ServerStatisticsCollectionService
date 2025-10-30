@@ -7,8 +7,8 @@ public class ServerStatisticsCollectorCreator : IServerStatisticsCollectorCreato
 {
     public IServerStatisticsCollector GetServerStatisticsCollectorFor(string osName)
     {
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            return new LinuxServerStatisticsCollector();
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) ;
+           
 
         throw new PlatformNotSupportedException("The current OS is not supported");
     }
