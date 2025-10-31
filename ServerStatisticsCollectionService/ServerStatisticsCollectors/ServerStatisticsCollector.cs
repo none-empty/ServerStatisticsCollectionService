@@ -14,12 +14,12 @@ public class ServerStatisticsCollector : IServerStatisticsCollector
         _cpuMonitor = factory.CreateCPUMonitor();
         _memoryMonitor = factory.CreateMemoryMonitor();
     }
-    public ServerStatistics GetServerStatistics()
+    public async Task<ServerStatistics> GetServerStatistics()
     {
         return new ServerStatistics(
          _memoryMonitor.GetMemorUsage(),
          _memoryMonitor.GetAvailableMemory(),
-         _cpuMonitor.GetCpuUsage(),
+         await _cpuMonitor.GetCpuUsage(),
          DateTime.UtcNow
         );
     }
