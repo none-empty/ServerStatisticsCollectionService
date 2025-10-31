@@ -16,13 +16,16 @@ public class ServerStatisticsCollector : IServerStatisticsCollector
     }
     public async Task<ServerStatistics> GetServerStatistics()
     {
+        
         (double memoryUsage, double availableMemory) = await _memoryMonitor.GetMemorUsageAndAvailableMemory();
         double cpuUsage = await _cpuMonitor.GetCpuUsage();
+        
         return new ServerStatistics(
             memoryUsage,
             availableMemory,
             cpuUsage,
             DateTime.UtcNow
         );
+        
     }
 }
