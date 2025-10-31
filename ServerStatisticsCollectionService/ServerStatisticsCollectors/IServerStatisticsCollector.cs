@@ -2,5 +2,5 @@ namespace ServerStatisticsCollectionService.ServerStatisticsCollectors;
 
 public interface IServerStatisticsCollector
 {
-    public ServerStatistics GetServerStatistics();
+    public Task<ServerStatistics> GetServerStatistics();
 }
