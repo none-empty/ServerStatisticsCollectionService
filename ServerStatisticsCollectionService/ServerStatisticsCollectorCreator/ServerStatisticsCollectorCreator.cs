@@ -6,7 +6,7 @@ namespace ServerStatisticsCollectionService.ServerStatisticsCollectorCreator;
 
 public class ServerStatisticsCollectorCreator : IServerStatisticsCollectorCreator
 {
-    public IServerStatisticsCollector GetServerStatisticsCollectorFor(string osName)
+    public IServerStatisticsCollector GetServerStatisticsCollector()
     {
         IServerStatisticsCollectorFactory? factory = null;
 
