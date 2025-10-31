@@ -17,8 +17,8 @@ public class ServerStatisticsCollector : IServerStatisticsCollector
     public async Task<ServerStatistics> GetServerStatistics()
     {
         return new ServerStatistics(
-         _memoryMonitor.GetMemorUsage(),
-         _memoryMonitor.GetAvailableMemory(),
+         await _memoryMonitor.GetMemorUsage(),
+         await _memoryMonitor.GetAvailableMemory(),
          await _cpuMonitor.GetCpuUsage(),
          DateTime.UtcNow
         );
