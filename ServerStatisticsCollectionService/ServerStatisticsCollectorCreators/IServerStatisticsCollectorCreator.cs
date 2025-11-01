@@ -1,6 +1,6 @@
 using ServerStatisticsCollectionService.ServerStatisticsCollectors;
 
-namespace ServerStatisticsCollectionService.ServerStatisticsCollectorCreator;
+namespace ServerStatisticsCollectionService.ServerStatisticsCollectorCreators;
 
 public interface IServerStatisticsCollectorCreator
 {

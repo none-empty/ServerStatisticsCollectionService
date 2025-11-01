@@ -1,4 +1,4 @@
-namespace ServerStatisticsCollectionService.RabbitMQSender;
+namespace ServerStatisticsCollectionService.RabbitMQSenders;
 
 public interface IRabbitMQSender
 {
