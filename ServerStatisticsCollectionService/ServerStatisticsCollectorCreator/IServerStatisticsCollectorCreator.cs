@@ -4,5 +4,5 @@ namespace ServerStatisticsCollectionService.ServerStatisticsCollectorCreator;
 
 public interface IServerStatisticsCollectorCreator
 {
-    public IServerStatisticsCollector GetServerStatisticsCollectorFor(string osName);
+    public IServerStatisticsCollector GetServerStatisticsCollector();
 }
