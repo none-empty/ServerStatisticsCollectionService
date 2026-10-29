@@ -2,6 +2,6 @@ namespace ServerStatisticsCollectionService.MemoryMonitors;
 
 public interface IMemoryMonitor
 {
-    public double GetMemorUsage();
-    public double GetAvailableMemory();
+    public Task<(double memoryUsage,double availableMemory)> GetMemorUsageAndAvailableMemory();
+     
 }

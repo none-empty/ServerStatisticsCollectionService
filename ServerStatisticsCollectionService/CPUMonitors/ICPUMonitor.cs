@@ -2,5 +2,5 @@ namespace ServerStatisticsCollectionService.CPUMonitors;
 
 public interface ICPUMonitor
 {
-    public double GetCpuUsage();
+    public  Task<double>  GetCpuUsage();
 }
