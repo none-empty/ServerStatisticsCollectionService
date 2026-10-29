@@ -11,6 +11,7 @@ public class ServiceLoop
     private readonly IServerStatisticsCollector _statisticsCollector;
     private readonly IRabbitMQSender _rabbitMQClient;
     private bool _serviceIsRunning;
+    
     public ServiceLoop(IServerStatisticsCollectorCreator collectorCreator,IRabbitMQSender rabbitMQClient)
     {
        _samplingIntervalMilliSeconds = (
