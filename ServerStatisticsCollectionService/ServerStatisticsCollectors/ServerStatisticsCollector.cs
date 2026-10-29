@@ -14,13 +14,19 @@ public class ServerStatisticsCollector : IServerStatisticsCollector
         _cpuMonitor = factory.CreateCPUMonitor();
         _memoryMonitor = factory.CreateMemoryMonitor();
     }
-    public ServerStatistics GetServerStatistics()
+    public async Task<ServerStatistics> GetServerStatistics()
     {
+        
+        (double memoryUsage, double availableMemory) = await _memoryMonitor.GetMemorUsageAndAvailableMemory();
+        double cpuUsage = await _cpuMonitor.GetCpuUsage();
+        
         return new ServerStatistics(
-         _memoryMonitor.GetMemorUsage(),
-         _memoryMonitor.GetAvailableMemory(),
-         _cpuMonitor.GetCpuUsage(),
-         DateTime.UtcNow
+            memoryUsage,
+            availableMemory,
+            cpuUsage,
+            DateTime.UtcNow,
+            Environment.GetEnvironmentVariable("ServerIdentifier")?? "producer1"
         );
+        
     }
 }
