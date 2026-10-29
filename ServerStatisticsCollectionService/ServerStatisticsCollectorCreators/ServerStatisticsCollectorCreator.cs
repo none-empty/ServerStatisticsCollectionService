@@ -1,12 +1,13 @@
 using System.Runtime.InteropServices;
+using ServerStatisticsCollectionService.ServerStatisticsCollectorCreators;
 using ServerStatisticsCollectionService.ServerStatisticsCollectorFactories;
 using ServerStatisticsCollectionService.ServerStatisticsCollectors;
 
-namespace ServerStatisticsCollectionService.ServerStatisticsCollectorCreator;
+namespace ServerStatisticsCollectionService.ServerStatisticsCollectorCreators;
 
 public class ServerStatisticsCollectorCreator : IServerStatisticsCollectorCreator
 {
-    public IServerStatisticsCollector GetServerStatisticsCollectorFor(string osName)
+    public IServerStatisticsCollector GetServerStatisticsCollector()
     {
         IServerStatisticsCollectorFactory? factory = null;
 
