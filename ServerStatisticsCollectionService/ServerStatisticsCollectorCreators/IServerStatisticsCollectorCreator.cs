@@ -1,0 +1,8 @@
+using ServerStatisticsCollectionService.ServerStatisticsCollectors;
+
+namespace ServerStatisticsCollectionService.ServerStatisticsCollectorCreators;
+
+public interface IServerStatisticsCollectorCreator
+{
+    public IServerStatisticsCollector GetServerStatisticsCollector();
+}
