@@ -24,7 +24,8 @@ public class ServerStatisticsCollector : IServerStatisticsCollector
             memoryUsage,
             availableMemory,
             cpuUsage,
-            DateTime.UtcNow
+            DateTime.UtcNow,
+            Environment.GetEnvironmentVariable("ServerIdentifier")?? "producer1"
         );
         
     }
