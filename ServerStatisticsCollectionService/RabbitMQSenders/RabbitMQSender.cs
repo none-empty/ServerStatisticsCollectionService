@@ -1,7 +1,7 @@
 using System.Text;
 using RabbitMQ.Client;
 
-namespace ServerStatisticsCollectionService.RabbitMQSender;
+namespace ServerStatisticsCollectionService.RabbitMQSenders;
 
 public class RabbitMQSender : IRabbitMQSender
 {
