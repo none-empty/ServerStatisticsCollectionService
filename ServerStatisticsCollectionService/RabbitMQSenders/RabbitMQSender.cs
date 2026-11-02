@@ -1,18 +1,27 @@
 using System.Text;
+using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
+using ServerStatisticsCollectionService.Options;
 
 namespace ServerStatisticsCollectionService.RabbitMQSenders;
 
 public class RabbitMQSender : IRabbitMQSender
 {
+    private readonly RabbitMQOptions _options;
+
+    public RabbitMQSender(IOptions<ServerStatisticsOptions> options)
+    {
+        _options = options.Value.RabbitMQ;
+    }
+
     public async Task QueuePayload(string payload)
     {
         var factory = new ConnectionFactory() 
         {
-            HostName = Environment.GetEnvironmentVariable("RABBITMQ__HOSTNAME") ?? "localhost",
-            Port = int.TryParse(Environment.GetEnvironmentVariable("RABBITMQ__PORT"), out var port) ? port : 5672,
-            UserName = Environment.GetEnvironmentVariable("RABBITMQ__USERNAME") ?? "guest",
-            Password = Environment.GetEnvironmentVariable("RABBITMQ__PASSWORD") ?? "guest"
+            HostName = _options.HostName,
+            Port = _options.Port,
+            UserName = _options.UserName,
+            Password = _options.Password
         };
          
             using var connection = await factory.CreateConnectionAsync();

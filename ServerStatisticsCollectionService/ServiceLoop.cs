@@ -1,4 +1,6 @@
 using System.Text.Json;
+using Microsoft.Extensions.Options;
+using ServerStatisticsCollectionService.Options;
 using ServerStatisticsCollectionService.RabbitMQSenders;
 using ServerStatisticsCollectionService.ServerStatisticsCollectorCreators;
 using ServerStatisticsCollectionService.ServerStatisticsCollectors;
@@ -12,11 +14,10 @@ public class ServiceLoop
     private readonly IRabbitMQSender _rabbitMQClient;
     private bool _serviceIsRunning;
     
-    public ServiceLoop(IServerStatisticsCollectorCreator collectorCreator,IRabbitMQSender rabbitMQClient)
+    public ServiceLoop(IServerStatisticsCollectorCreator collectorCreator, IRabbitMQSender rabbitMQClient,
+        IOptions<ServerStatisticsOptions> options)
     {
-       _samplingIntervalMilliSeconds = (
-           int.TryParse(Environment.GetEnvironmentVariable("SamplingIntervalSeconds"),out var intervalSeconds) 
-               ? intervalSeconds:5) * 1000;
+       _samplingIntervalMilliSeconds = options.Value.SamplingIntervalSeconds * 1000;
        
        _serviceIsRunning = true;
 

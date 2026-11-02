@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using ServerStatisticsCollectionService.Options;
 using ServerStatisticsCollectionService.RabbitMQSenders;
 using ServerStatisticsCollectionService.ServerStatisticsCollectorCreators;
 
@@ -11,6 +12,7 @@ class Program
     {
         var host = Host.CreateDefaultBuilder(args) .ConfigureServices((context, services) => 
             { 
+               services.Configure<ServerStatisticsOptions>(context.Configuration);
                services.AddTransient<IServerStatisticsCollectorCreator, ServerStatisticsCollectorCreator>(); 
                services.AddTransient<IRabbitMQSender, RabbitMQSender>(); 
                 services.AddSingleton<ServiceLoop>(); 
