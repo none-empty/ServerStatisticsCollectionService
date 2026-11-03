@@ -2,5 +2,5 @@ namespace ServerStatisticsCollectionService.RabbitMQSenders;
 
 public interface IRabbitMQSender
 {
-    public Task QueuePayload(string message);
+    Task QueuePayload(string message, CancellationToken cancellationToken = default);
 }

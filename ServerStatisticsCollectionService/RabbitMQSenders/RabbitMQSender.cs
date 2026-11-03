@@ -1,49 +1,110 @@
 using System.Text;
-using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
-using ServerStatisticsCollectionService.Options;
 
 namespace ServerStatisticsCollectionService.RabbitMQSenders;
 
-public class RabbitMQSender : IRabbitMQSender
+public class RabbitMQSender : IRabbitMQSender, IAsyncDisposable
 {
-    private readonly RabbitMQOptions _options;
+    private const string QueueName = "server_statistics_queue";
+    private readonly IConnectionFactory _connectionFactory;
+    private readonly SemaphoreSlim _channelLock = new(1, 1);
+    private IConnection? _connection;
+    private IChannel? _channel;
+    private bool _disposed;
 
-    public RabbitMQSender(IOptions<ServerStatisticsOptions> options)
+    public RabbitMQSender(IConnectionFactory connectionFactory)
     {
-        _options = options.Value.RabbitMQ;
+        _connectionFactory = connectionFactory;
     }
 
-    public async Task QueuePayload(string payload)
+    public async Task QueuePayload(string payload, CancellationToken cancellationToken = default)
     {
-        var factory = new ConnectionFactory() 
+        // A shared publishing channel must not be used by concurrent callers.
+        await _channelLock.WaitAsync(cancellationToken);
+        try
         {
-            HostName = _options.HostName,
-            Port = _options.Port,
-            UserName = _options.UserName,
-            Password = _options.Password
-        };
-         
-            using var connection = await factory.CreateConnectionAsync();
-            using var channel = await connection.CreateChannelAsync();
+            ObjectDisposedException.ThrowIf(_disposed, this);
+            var channel = await GetChannelAsync(cancellationToken);
 
+            await channel.BasicPublishAsync(
+                exchange: string.Empty,
+                routingKey: QueueName,
+                mandatory: true,
+                basicProperties: new BasicProperties { Persistent = true },
+                body: Encoding.UTF8.GetBytes(payload),
+                cancellationToken: cancellationToken);
+        }
+        finally
+        {
+            _channelLock.Release();
+        }
+    }
 
-            const string queueName = "server_statistics_queue";
+    private async Task<IChannel> GetChannelAsync(CancellationToken cancellationToken)
+    {
+        _connection ??= await _connectionFactory.CreateConnectionAsync(cancellationToken);
 
+        // Keep the same objects during network recovery; the client restores them.
+        if (_channel is not null)
+        {
+            return _channel;
+        }
+
+        var channel = await _connection.CreateChannelAsync(
+            new CreateChannelOptions(
+                publisherConfirmationsEnabled: true,
+                publisherConfirmationTrackingEnabled: true),
+            cancellationToken);
+        try
+        {
+            // Match the receiver's declaration. Changing durability requires both services.
             await channel.QueueDeclareAsync(
-                queue: queueName,
+                queue: QueueName,
                 durable: false,
                 exclusive: false,
                 autoDelete: false,
-                arguments: null);
+                arguments: null,
+                cancellationToken: cancellationToken);
 
-            var body = Encoding.UTF8.GetBytes(payload);
+            _channel = channel;
+            return channel;
+        }
+        catch
+        {
+            await channel.DisposeAsync();
+            throw;
+        }
+    }
 
-            await channel.BasicPublishAsync(exchange: string.Empty,
-                routingKey: queueName,
-                mandatory: false,
-                basicProperties: new BasicProperties { Persistent = true },
-                body: body);
+    public async ValueTask DisposeAsync()
+    {
+        await _channelLock.WaitAsync();
+        try
+        {
+            if (_disposed)
+            {
+                return;
+            }
 
+            _disposed = true;
+            try
+            {
+                if (_channel is not null)
+                {
+                    await _channel.DisposeAsync();
+                }
+            }
+            finally
+            {
+                if (_connection is not null)
+                {
+                    await _connection.DisposeAsync();
+                }
+            }
+        }
+        finally
+        {
+            _channelLock.Release();
+        }
     }
 }
