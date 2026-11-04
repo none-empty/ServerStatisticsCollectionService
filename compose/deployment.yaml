@@ -1,0 +1,41 @@
+services:
+  statistics:
+    extends:
+      file: deployment.external.yaml
+      service: statistics
+    environment:
+      # Always use the bundled broker when external settings are incomplete.
+      RabbitMQ__HostName: rabbitmq
+      RabbitMQ__Port: "5672"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  rabbitmq:
+    image: rabbitmq:4-management
+    pull_policy: missing
+    hostname: rabbitmq
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RabbitMQ__UserName:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RabbitMQ__Password:-guest}
+    ports:
+      - "127.0.0.1:${RabbitMQ__Port:-5672}:5672"
+      - "127.0.0.1:15672:15672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - messaging
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "check_port_connectivity"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+volumes:
+  rabbitmq-data:
+
+networks:
+  messaging:
+    driver: bridge

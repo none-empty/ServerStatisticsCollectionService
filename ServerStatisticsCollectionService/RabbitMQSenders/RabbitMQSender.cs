@@ -57,10 +57,11 @@ public class RabbitMQSender : IRabbitMQSender, IAsyncDisposable
             cancellationToken);
         try
         {
-            // Match the receiver's declaration. Changing durability requires both services.
+            // RabbitMQ 4.3+ rejects non-durable, non-exclusive queues by default.
+            // Receivers must declare the same durable queue.
             await channel.QueueDeclareAsync(
                 queue: QueueName,
-                durable: false,
+                durable: true,
                 exclusive: false,
                 autoDelete: false,
                 arguments: null,

@@ -1,0 +1,3 @@
+# Use an external broker only when its hostname and both credentials are supplied.
+include:
+  - path: ./compose/deployment${RabbitMQ__HostName:+${RabbitMQ__UserName:+${RabbitMQ__Password:+.external}}}.yaml

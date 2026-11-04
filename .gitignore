@@ -39,3 +39,6 @@ msbuild.wrn
 .vs/
 
 *.json
+
+# Local deployment credentials
+.env

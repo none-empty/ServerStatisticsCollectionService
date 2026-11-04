@@ -1,0 +1,19 @@
+services:
+  statistics:
+    build:
+      context: ..
+      dockerfile: ServerStatisticsCollectionService/Dockerfile
+    restart: unless-stopped
+    networks:
+      - messaging
+    environment:
+      RabbitMQ__HostName: ${RabbitMQ__HostName:-rabbitmq}
+      RabbitMQ__Port: ${RabbitMQ__Port:-5672}
+      RabbitMQ__UserName: ${RabbitMQ__UserName:-guest}
+      RabbitMQ__Password: ${RabbitMQ__Password:-guest}
+      SamplingIntervalSeconds: ${SamplingIntervalSeconds:-5}
+      ServerIdentifier: ${ServerIdentifier:-producer1}
+
+networks:
+  messaging:
+    driver: bridge
